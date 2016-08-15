@@ -52,6 +52,12 @@ class TestMovieDataApi(unittest.TestCase):
         ''' Runs this before all tests '''
         self.api = MovieDataApi()
 
+    def test_get_movie_data_exception(self):
+        ''' Test the get_movie_data method without any arguments '''
+
+        with self.assertRaises(Exception):
+            self.api.get_movie_data()
+
     def test_get_movie_data(self):
         ''' Test the get_movie_data method using imdb_id and movie arguments '''
         imdb_id = 'tt0090605'

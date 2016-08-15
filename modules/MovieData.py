@@ -7,13 +7,21 @@ from HboMovieData.modules.Api import ImdbApi
 class MovieData(object):
     ''' Stores movie metadata to a file and provides access to the data '''
 
-    def __init__(self, fileName):
+    def __init__(self, fileName=None):
         self.__file_name = fileName
         self.__parse_file()
         self.__imdb_api = ImdbApi()
 
     def __len__(self):
         return len(self.__data)
+
+    def __iter__(self):
+        for imdb_id in sorted(
+                self.__data,
+                key=lambda imdb_id: float(self.__data[imdb_id]['imdbRating']),
+                reverse=True,
+            ):
+            yield imdb_id
 
     def update_status(self, imdb_id, status):
         '''
@@ -24,7 +32,10 @@ class MovieData(object):
 
         :return:  None
         '''
-        self.__data[imdb_id]['status'] = status
+        try:
+            self.__data[imdb_id]['status'] = status
+        except KeyError as error:
+            raise KeyError('Invalid IMDB identifier specified: %s' % (error))
 
     def update_file(self):
         '''
@@ -38,11 +49,7 @@ class MovieData(object):
         self.__create_backup()
 
         fh_out = open(self.__file_name, 'w')
-        for imdb_id in sorted(
-                self.__data,
-                key=lambda imdb_id: float(self.__data[imdb_id]['imdbRating']),
-                reverse=True,
-            ):
+        for imdb_id in self:
 
             try:
                 fh_out.write(
@@ -126,6 +133,9 @@ class MovieData(object):
                     status='Deleted',  # Assume all these movies are no longer available.
                 )
             fh_in.close()
+        except TypeError:
+            # No file specified, skip parsing
+            pass
         except IOError:
             # Older file not found, skip parsing
             pass
