@@ -81,9 +81,9 @@ class MovieData(object):
         '''
         Returns boolean if the imdb_id has been loaded into an instance of this class
 
-        :imdb_id String:  Imdb identifier, eg, tt0090605
+        :param imdb_id:  String - Imdb identifier, eg, tt0090605
 
-        :return Boolean:  Has the identifier been loaded
+        :return:  Boolean - Has the identifier been loaded
         '''
         return imdb_id in self.__data
 
