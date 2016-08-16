@@ -1,6 +1,5 @@
 '''.'''
 
-import os
 from HboMovieData.modules.Api import ImdbApi
 
 
@@ -18,10 +17,51 @@ class MovieData(object):
     def __iter__(self):
         for imdb_id in sorted(
                 self.__data,
-                key=lambda imdb_id: float(self.__data[imdb_id]['imdbRating']),
+                key=lambda imdb_id: float(self.__data[imdb_id]['imdb_rating']),
                 reverse=True,
             ):
             yield imdb_id
+
+    def get_data(self, imdb_id):
+        '''
+        Returns movie metadata for the specified IMDB identifier
+
+        :param imdb_id:  String - IMDB identifier, eg, tt0090605
+
+        :return:  Dictionary - Movie metadata (title, year, score, ...)
+        '''
+
+        try:
+            return self.__data[imdb_id]
+        except KeyError as error:
+            raise KeyError('No data found for IMDB identifier: %s' % (error))
+
+    def get_data_string(self, imdb_id):
+        '''
+        Returns movie metadata for the specified IMDB identifier as a string.
+        This string is guaranteed to be parseable by this module.
+
+        :param imdb_id:  String - IMDB identifier, eg, tt0090605
+
+        :return:  String - Movie metadata in tab delimited format
+        '''
+
+        data = self.get_data(imdb_id)
+
+        string = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s' % (
+            data['title'],
+            data['year'],
+            data['genre'],
+            data['actors'],
+            data['plot'],
+            data['imdb_rating'],
+            data['metacritic'],
+            data['status'],
+            data['imdb_id'],
+            self.__imdb_api.get_url(data['imdb_id']),
+        )
+
+        return string
 
     def update_status(self, imdb_id, status):
         '''
@@ -36,53 +76,6 @@ class MovieData(object):
             self.__data[imdb_id]['status'] = status
         except KeyError as error:
             raise KeyError('Invalid IMDB identifier specified: %s' % (error))
-
-    def update_file(self):
-        '''
-        Creates a new file with all the movie entries and their metadata
-
-        :param:  None
-
-        :return:  None
-        '''
-
-        self.__create_backup()
-
-        fh_out = open(self.__file_name, 'w')
-        for imdb_id in self:
-
-            try:
-                fh_out.write(
-                    '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' % (
-                        self.__data[imdb_id]['title'],
-                        self.__data[imdb_id]['year'],
-                        self.__data[imdb_id]['genre'],
-                        self.__data[imdb_id]['actors'],
-                        self.__data[imdb_id]['plot'],
-                        self.__data[imdb_id]['imdbRating'],
-                        self.__data[imdb_id]['metacritic'],
-                        self.__data[imdb_id]['status'],
-                        imdb_id,
-                        self.__imdb_api.get_url(imdb_id),
-                    )
-                )
-            except UnicodeEncodeError:
-                fh_out.write(
-                    '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' % (
-                        self.__data[imdb_id]['title'].encode('utf-8'),
-                        self.__data[imdb_id]['year'].encode('utf-8'),
-                        self.__data[imdb_id]['genre'].encode('utf-8'),
-                        self.__data[imdb_id]['actors'].encode('utf-8'),
-                        self.__data[imdb_id]['plot'].encode('utf-8'),
-                        self.__data[imdb_id]['imdbRating'].encode('utf-8'),
-                        self.__data[imdb_id]['metacritic'].encode('utf-8'),
-                        self.__data[imdb_id]['status'].encode('utf-8'),
-                        imdb_id.encode('utf-8'),
-                        self.__imdb_api.get_url(imdb_id.encode('utf-8')),
-                    )
-                )
-
-        fh_out.close()
 
     def exists(self, imdb_id):
         '''
@@ -102,9 +95,9 @@ class MovieData(object):
         '''
 
         self.__data[kwargs['imdb_id']] = {
-            'imdbId': kwargs['imdb_id'],
+            'imdb_id': kwargs['imdb_id'],
             'title': kwargs['title'],
-            'imdbRating': kwargs['imdb_rating'],
+            'imdb_rating': kwargs['imdb_rating'],
             'metacritic': kwargs['metacritic'],
             'year': kwargs['year'],
             'genre': kwargs['genre'],
@@ -138,12 +131,4 @@ class MovieData(object):
             pass
         except IOError:
             # Older file not found, skip parsing
-            pass
-
-    def __create_backup(self):
-        try:
-            backup_file = '%s~' % (self.__file_name)
-            os.rename(self.__file_name, backup_file)
-        except OSError:
-            # File not found, skip renaming
             pass

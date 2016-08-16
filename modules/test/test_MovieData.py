@@ -10,6 +10,7 @@ class TestMovieData(unittest.TestCase):
     def setUp(self):
         ''' Runs this before all tests '''
         self.movie_data = MovieData()
+        self.__valid_identifier = 'tt0090605'
 
     def test_missing_file(self):
         ''' Make sure exception is checked but passed for missing file '''
@@ -47,7 +48,45 @@ class TestMovieData(unittest.TestCase):
     def test_exists_true(self):
         ''' Add data to the object and validate that it exists. '''
         self.__add_movies()
-        self.assertTrue(self.movie_data.exists('tt0090605'))
+        self.assertTrue(self.movie_data.exists(self.__valid_identifier))
+
+    def test_get_data(self):
+        ''' Test the getter for movie data '''
+        self.__add_movies()
+        controlData = {
+            'imdb_id': 'tt0090605',
+            'title': 'Aliens',
+            'imdb_rating': '8.4',
+            'metacritic': '87',
+            'year': '1986',
+            'genre': 'Action, Adventure, Sci-Fi',
+            'actors': 'Sigourney Weaver, Carrie Henn, Michael Biehn, Paul Reiser',
+            'plot': 'The planet from Alien (1979) has been colonized, but contact is lost. ' \
+                    'This time, the rescue team has impressive firepower, but will it be enough?',
+            'status': 'New',
+        }
+        data = self.movie_data.get_data(self.__valid_identifier)
+        self.assertDictEqual(
+            data,
+            controlData,
+        )
+
+    def test_get_data_string(self):
+        ''' Test the getter to return a valid string '''
+        self.__add_movies()
+        string = self.movie_data.get_data_string(self.__valid_identifier)
+        self.assertEqual(
+            string,
+            'Aliens\t1986\tAction, Adventure, Sci-Fi\tSigourney Weaver, Carrie Henn, ' \
+            'Michael Biehn, Paul Reiser\tThe planet from Alien (1979) has been colonized, ' \
+            'but contact is lost. This time, the rescue team has impressive firepower, but ' \
+            'will it be enough?\t8.4\t87\tNew\ttt0090605\thttp://www.imdb.com/title/tt0090605/',
+        )
+
+    def test_get_data_exception(self):
+        ''' Test the getter for movie data raises an exception with an invalid identifier '''
+        with self.assertRaises(KeyError):
+            self.movie_data.get_data('invalid_identifier')
 
     def __add_movies(self):
         dataList = [
@@ -71,8 +110,8 @@ class TestMovieData(unittest.TestCase):
                 'year': '1994',
                 'genre': 'Crime, Drama',
                 'actors': 'Tim Roth, Amanda Plummer, Laura Lovelace, John Travolta',
-                'plot': 'The lives of two mob hit men, a boxer, a gangster\'s wife, and a ' \
-                        'pair of diner bandits intertwine in four tales of violence and redemption.',
+                'plot': 'The lives of two mob hit men, a boxer, a gangster\'s wife, and a pair ' \
+                        'of diner bandits intertwine in four tales of violence and redemption.',
                 'status': 'New',
             },
             {
@@ -84,7 +123,8 @@ class TestMovieData(unittest.TestCase):
                 'genre': 'Action, Adventure, Sci-Fi',
                 'actors': 'Sigourney Weaver, Carrie Henn, Michael Biehn, Paul Reiser',
                 'plot': 'The planet from Alien (1979) has been colonized, but contact is lost. ' \
-                        'This time, the rescue team has impressive firepower, but will it be enough?',
+                        'This time, the rescue team has impressive firepower, but will it be ' \
+                        'enough?',
                 'status': 'New',
             },
         ]

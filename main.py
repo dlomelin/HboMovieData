@@ -50,8 +50,19 @@ def main():
                 status='New',
             )
 
+    # Make a backup of the current file
+    create_backup(out_file)
+
     # Write out a new movie data file
-    movie_data.update_file()
+    fh_out = open(out_file, 'w')
+    for imdb_id in movie_data:
+        data_string = movie_data.get_data_string(imdb_id)
+        try:
+            fh_out.write('%s\n' % (data_string))
+        except UnicodeEncodeError:
+            fh_out.write('%s\n' % (data_string.encode('utf-8')))
+
+    fh_out.close()
 
     print '%s/%s new movies.' % (new_movie_count, len(movie_data))
 
@@ -69,6 +80,21 @@ def get_api_key(file_name):
     api_key = config.get('hbo', 'api-key')
     return api_key
 
+def create_backup(file_name):
+    '''
+    Renames file_name to allow a new file to be made with the same name
+
+    :param file_name:  String - Name of a file
+
+    :return:  None
+    '''
+
+    try:
+        backup_file = '%s~' % (file_name)
+        os.rename(file_name, backup_file)
+    except OSError:
+        # File not found, skip renaming
+        pass
 
 if __name__ == '__main__':
     main()
