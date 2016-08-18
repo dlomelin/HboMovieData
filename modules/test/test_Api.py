@@ -97,7 +97,3 @@ class TestImdbApi(unittest.TestCase):
             self.api.get_url('tt0090605'),
             'http://www.imdb.com/title/tt0090605/',
         )
-
-
-if __name__ == '__main__':
-    unittest.main()

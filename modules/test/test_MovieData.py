@@ -131,7 +131,3 @@ class TestMovieData(unittest.TestCase):
 
         for data in dataList:
             self.movie_data.add(**data)
-
-
-if __name__ == '__main__':
-    unittest.main()
