@@ -3,8 +3,9 @@ python:
  - "2.7"
 
 # Install all dependencies
-install: "pip install -r requirements.txt"
+install:
+ - pip install -r requirements.txt
 
 # Run all tests
-#script: "nosetests --with-coverage --cover-package=HboMovieData"
-script: nosetests
+script:
+ - nosetests --with-coverage --cover-erase --cover-package=HboMovieData
