@@ -10,3 +10,6 @@ install:
 # Run all tests
 script:
  - tox
+
+after_success:
+ - tox -e coveralls
