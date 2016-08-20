@@ -1,6 +1,6 @@
 '''.'''
 
-from HboMovieData.modules.Api import ImdbApi
+from movie_data.Api import ImdbApi
 
 
 class MovieData(object):

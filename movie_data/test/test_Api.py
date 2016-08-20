@@ -1,7 +1,7 @@
 '''.'''  #pylint: disable=invalid-name
 
 import unittest
-from HboMovieData.modules.Api import ApiUrl, ImdbApi, MovieDataApi
+from movie_data.Api import ApiUrl, ImdbApi, MovieDataApi
 
 
 class TestApiUrl(unittest.TestCase):

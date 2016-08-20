@@ -1,7 +1,7 @@
 '''.'''  #pylint: disable=invalid-name
 
 import unittest
-from HboMovieData.modules.MovieData import MovieData
+from movie_data.MovieData import MovieData
 
 
 class TestMovieData(unittest.TestCase):
