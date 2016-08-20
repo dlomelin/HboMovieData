@@ -54,8 +54,20 @@ class TestHboApi(unittest.TestCase):
         api_key = 'fakekey'
         self.api = HboApi(api_key)
 
-    def test_movies(self):
-        pass
+    @mock.patch('movie_data.Api.requests.get')
+    def test_movies_iter(self, mock_get):
+        # Mocks requests.get().json() to return a custom dictionary
+        mock_get.return_value.json.return_value = {
+            'total_results': 300,
+            'total_returned': 2,
+            'results': [
+                {'imdb': 'tt0090605'},
+            ],
+        }
+        self.assertListEqual(
+            list(self.api.movies()),
+            ['tt0090605', 'tt0090605'],
+        )
 
 
 class TestMovieDataApi(unittest.TestCase):
@@ -72,20 +84,20 @@ class TestMovieDataApi(unittest.TestCase):
             self.api.get_movie_data()
 
     @mock.patch('movie_data.Api.requests.get')
-    def test_get_movie_data(self, mock_req):
+    def test_get_movie_data(self, mock_get):
 
         ''' Test the get_movie_data method using imdb_id and movie arguments '''
         imdb_id = 'tt0090605'
         movie = 'Aliens'
 
         data = self.api.get_movie_data(imdb_id=imdb_id)
-        mock_req.assert_called_with(
+        mock_get.assert_called_with(
             'https://omdbapi.com/',
             params={'tomatoes': False, 'i': 'tt0090605'},
         )
 
         data = self.api.get_movie_data(movie=movie)
-        mock_req.assert_called_with(
+        mock_get.assert_called_with(
             'https://omdbapi.com/',
             params={'tomatoes': False, 't': 'Aliens'},
         )

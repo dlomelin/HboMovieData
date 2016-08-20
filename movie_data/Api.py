@@ -68,15 +68,20 @@ class HboApi(ApiUrl):
                     yield moviedata['imdb']
 
             # Quit if no more entries returned or next batch will not yield any new results
+            # or if the json structure doesn't have a total_returned key (prevents infinite loop)
             newstart = self.__start + self.__fetch_count
-            if json_data['total_returned'] == 0 or newstart >= json_data['total_results']:
+
+            if newstart >= json_data['total_results'] or \
+                'total_returned' not in json_data or \
+                json_data['total_returned'] == 0:
+
+                # Reset the counter
+                self.__set_start()
+
                 raise StopIteration
-
-            # Set the new fetching coordinates for the next batch (updates url)
-            self.__set_start(newstart)
-
-        # Reset the counter
-        self.__set_start()
+            else:
+                # Set the new fetching coordinates for the next batch (updates url)
+                self.__set_start(newstart)
 
     def __set_start(self, start=0):
         self.__start = start
