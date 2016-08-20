@@ -2,8 +2,8 @@
 
 import os
 from ConfigParser import ConfigParser
-from HboMovieData.modules.MovieData import MovieData
-from HboMovieData.modules.Api import HboApi, MovieDataApi
+from movie_data.MovieData import MovieData
+from movie_data.Api import HboApi, MovieDataApi
 
 
 def main():
