@@ -1,7 +1,8 @@
 '''.'''  #pylint: disable=invalid-name
 
 import unittest
-from movie_data.Api import ApiUrl, ImdbApi, MovieDataApi
+import mock
+from movie_data.Api import ApiUrl, ImdbApi, HboApi, MovieDataApi
 
 
 class TestApiUrl(unittest.TestCase):
@@ -45,6 +46,18 @@ class TestApiUrl(unittest.TestCase):
         )
 
 
+class TestHboApi(unittest.TestCase):
+    ''' Test the HboApi class '''
+
+    def setUp(self):
+        ''' Runs this before all tests '''
+        api_key = 'fakekey'
+        self.api = HboApi(api_key)
+
+    def test_movies(self):
+        pass
+
+
 class TestMovieDataApi(unittest.TestCase):
     ''' Test the MovieDataApi class '''
 
@@ -58,29 +71,23 @@ class TestMovieDataApi(unittest.TestCase):
         with self.assertRaises(Exception):
             self.api.get_movie_data()
 
-    def test_get_movie_data(self):
+    @mock.patch('movie_data.Api.requests.get')
+    def test_get_movie_data(self, mock_req):
+
         ''' Test the get_movie_data method using imdb_id and movie arguments '''
         imdb_id = 'tt0090605'
         movie = 'Aliens'
 
         data = self.api.get_movie_data(imdb_id=imdb_id)
-        self.__validate_aliens_data(data, imdb_id, movie)
+        mock_req.assert_called_with(
+            'https://omdbapi.com/',
+            params={'tomatoes': False, 'i': 'tt0090605'},
+        )
 
         data = self.api.get_movie_data(movie=movie)
-        self.__validate_aliens_data(data, imdb_id, movie)
-
-    def __validate_aliens_data(self, data, imdb_id, movie):
-        self.assertEqual(
-            data['Title'],
-            movie,
-        )
-        self.assertEqual(
-            data['Year'],
-            '1986',
-        )
-        self.assertEqual(
-            data['imdbID'],
-            imdb_id,
+        mock_req.assert_called_with(
+            'https://omdbapi.com/',
+            params={'tomatoes': False, 't': 'Aliens'},
         )
 
 
