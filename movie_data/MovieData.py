@@ -111,21 +111,20 @@ class MovieData(object):
         self.__data = {}
 
         try:
-            fh_in = open(self.__file_name, 'rU')
-            for line in fh_in:
-                file_data = line.rstrip().split('\t')
-                self.add(
-                    imdb_id=file_data[8],
-                    title=file_data[0],
-                    imdb_rating=file_data[5],
-                    metacritic=file_data[6],
-                    year=file_data[1],
-                    genre=file_data[2],
-                    actors=file_data[3],
-                    plot=file_data[4],
-                    status='Deleted',  # Assume all these movies are no longer available.
-                )
-            fh_in.close()
+            with open(self.__file_name, 'rU') as fh_in:
+                for line in fh_in:
+                    file_data = line.rstrip().split('\t')
+                    self.add(
+                        imdb_id=file_data[8],
+                        title=file_data[0],
+                        imdb_rating=file_data[5],
+                        metacritic=file_data[6],
+                        year=file_data[1],
+                        genre=file_data[2],
+                        actors=file_data[3],
+                        plot=file_data[4],
+                        status='Deleted',  # Assume all these movies are no longer available.
+                    )
         except TypeError:
             # No file specified, skip parsing
             pass

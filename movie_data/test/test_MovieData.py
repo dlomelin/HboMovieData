@@ -1,6 +1,7 @@
 '''.'''  #pylint: disable=invalid-name
 
 import unittest
+import tempfile
 from movie_data.MovieData import MovieData
 
 
@@ -11,6 +12,31 @@ class TestMovieData(unittest.TestCase):
         ''' Runs this before all tests '''
         self.movie_data = MovieData()
         self.__valid_identifier = 'tt0090605'
+
+    def test_valid_file(self):
+        ''' Make sure valid file is parsed and loaded '''
+        # Load an object with entries
+        self.__add_movies()
+
+        # Write movie data to file
+        fh_out = tempfile.NamedTemporaryFile()
+        for imdb_id in self.movie_data:
+            data_string = self.movie_data.get_data_string(imdb_id)
+            fh_out.write('%s\n' % (data_string))
+
+        # Go back to the beginning of the file
+        fh_out.seek(0)
+
+        # Open the recently made data
+        new_obj = MovieData(fh_out.name)
+
+        self.assertEqual(
+            len(new_obj),
+            3,
+        )
+
+        for imdb_id in ['tt0110912', 'tt0090605', 'tt0268978']:
+            self.assertTrue(new_obj.exists(imdb_id))
 
     def test_missing_file(self):
         ''' Make sure exception is checked but passed for missing file '''
