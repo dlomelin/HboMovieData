@@ -90,13 +90,13 @@ class TestMovieDataApi(unittest.TestCase):
         imdb_id = 'tt0090605'
         movie = 'Aliens'
 
-        data = self.api.get_movie_data(imdb_id=imdb_id)
+        self.api.get_movie_data(imdb_id=imdb_id)
         mock_get.assert_called_with(
             'https://omdbapi.com/',
             params={'tomatoes': False, 'i': 'tt0090605'},
         )
 
-        data = self.api.get_movie_data(movie=movie)
+        self.api.get_movie_data(movie=movie)
         mock_get.assert_called_with(
             'https://omdbapi.com/',
             params={'tomatoes': False, 't': 'Aliens'},
