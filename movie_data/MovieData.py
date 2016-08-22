@@ -18,8 +18,7 @@ class MovieData(object):
         for imdb_id in sorted(
                 self.__data,
                 key=lambda imdb_id: float(self.__data[imdb_id]['imdb_rating']),
-                reverse=True,
-            ):
+                reverse=True):
             yield imdb_id
 
     def get_data(self, imdb_id):

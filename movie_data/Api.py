@@ -72,8 +72,8 @@ class HboApi(ApiUrl):
             newstart = self.__start + self.__fetch_count
 
             if newstart >= json_data['total_results'] or \
-                'total_returned' not in json_data or \
-                json_data['total_returned'] == 0:
+                    'total_returned' not in json_data or \
+                    json_data['total_returned'] == 0:
 
                 # Reset the counter
                 self.__set_start()
